@@ -40,10 +40,7 @@ export default withAuth(
       }
     },
     lists,
-    session: statelessSessions({
-      domain: 'beraus.cyberpolin.com',
-      secret: 'A;SDHFJS8U9D8FUASDFJHKFJKSADHF23NDJFJFJF'
-    }),
+    session,
     images: {
       upload: 'local',
       local: {
