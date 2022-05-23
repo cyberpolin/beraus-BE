@@ -13,12 +13,11 @@ import { lists } from './schema';
 
 // Keystone auth is configured separately - check out the basic auth setup we are importing from our auth file.
 import { withAuth, session } from './auth';
+import { statelessSessions } from '@keystone-6/core/session';
 
 export default withAuth(
   // Using the config function helps typescript guide you to the available options.
   config({
-    // the db sets the database provider - we're using sqlite for the fastest startup experience
-    // url: 'postgres://dbuser:dbpass@localhost:5432/keystone',
     db: {
       provider: 'postgresql',
       url: 'postgres://beraus:rt459pk1@postgresql-31913-0.cloudclusters.net:31913',
@@ -41,7 +40,10 @@ export default withAuth(
       }
     },
     lists,
-    session,
+    session: statelessSessions({
+      domain: 'beraus.cyberpolin.com',
+      secret: 'A;SDHFJS8U9D8FUASDFJHKFJKSADHF23NDJFJFJF'
+    }),
     images: {
       upload: 'local',
       local: {
