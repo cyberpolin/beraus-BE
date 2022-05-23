@@ -125,6 +125,172 @@ input UserRelateToOneForCreateInput {
   connect: UserWhereUniqueInput
 }
 
+type Payment {
+  id: ID!
+  dueDate: DateTime
+  payDatetimestamp: DateTime
+  amount: String
+  acceptedBy: User
+  user: User
+  image: ImageFieldOutput
+  cImage: CloudinaryImage_File
+}
+
+interface ImageFieldOutput {
+  id: ID!
+  filesize: Int!
+  width: Int!
+  height: Int!
+  extension: ImageExtension!
+  ref: String!
+  url: String!
+}
+
+enum ImageExtension {
+  jpg
+  png
+  webp
+  gif
+}
+
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
+}
+
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """
+   Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
+}
+
+input PaymentWhereUniqueInput {
+  id: ID
+}
+
+type LocalImageFieldOutput implements ImageFieldOutput {
+  id: ID!
+  filesize: Int!
+  width: Int!
+  height: Int!
+  extension: ImageExtension!
+  ref: String!
+  url: String!
+}
+
+type CloudImageFieldOutput implements ImageFieldOutput {
+  id: ID!
+  filesize: Int!
+  width: Int!
+  height: Int!
+  extension: ImageExtension!
+  ref: String!
+  url: String!
+}
+
+input PaymentWhereInput {
+  AND: [PaymentWhereInput!]
+  OR: [PaymentWhereInput!]
+  NOT: [PaymentWhereInput!]
+  id: IDFilter
+  dueDate: DateTimeFilter
+  payDatetimestamp: DateTimeNullableFilter
+  amount: StringFilter
+  acceptedBy: UserWhereInput
+  user: UserWhereInput
+}
+
+input DateTimeNullableFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeNullableFilter
+}
+
+input PaymentOrderByInput {
+  id: OrderDirection
+  dueDate: OrderDirection
+  payDatetimestamp: OrderDirection
+  amount: OrderDirection
+}
+
+input PaymentUpdateInput {
+  dueDate: DateTime
+  payDatetimestamp: DateTime
+  amount: String
+  acceptedBy: UserRelateToOneForUpdateInput
+  user: UserRelateToOneForUpdateInput
+  image: ImageFieldInput
+  cImage: Upload
+}
+
+input ImageFieldInput {
+  upload: Upload
+  ref: String
+}
+
+"""
+The `Upload` scalar type represents a file upload.
+"""
+scalar Upload
+
+input PaymentUpdateArgs {
+  where: PaymentWhereUniqueInput!
+  data: PaymentUpdateInput!
+}
+
+input PaymentCreateInput {
+  dueDate: DateTime
+  payDatetimestamp: DateTime
+  amount: String
+  acceptedBy: UserRelateToOneForCreateInput
+  user: UserRelateToOneForCreateInput
+  image: ImageFieldInput
+  cImage: Upload
+}
+
 type User {
   id: ID!
   name: String
@@ -138,6 +304,14 @@ type User {
   ): [Post!]
   postsCount(where: PostWhereInput! = {}): Int
   events: Event
+  payments(
+    where: PaymentWhereInput! = {}
+    orderBy: [PaymentOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [Payment!]
+  paymentsCount(where: PaymentWhereInput! = {}): Int
+  accepted: Payment
 }
 
 type PasswordState {
@@ -158,12 +332,20 @@ input UserWhereInput {
   email: StringFilter
   posts: PostManyRelationFilter
   events: EventWhereInput
+  payments: PaymentManyRelationFilter
+  accepted: PaymentWhereInput
 }
 
 input PostManyRelationFilter {
   every: PostWhereInput
   some: PostWhereInput
   none: PostWhereInput
+}
+
+input PaymentManyRelationFilter {
+  every: PaymentWhereInput
+  some: PaymentWhereInput
+  none: PaymentWhereInput
 }
 
 input UserOrderByInput {
@@ -178,6 +360,8 @@ input UserUpdateInput {
   password: String
   posts: PostRelateToManyForUpdateInput
   events: EventRelateToOneForUpdateInput
+  payments: PaymentRelateToManyForUpdateInput
+  accepted: PaymentRelateToOneForUpdateInput
 }
 
 input PostRelateToManyForUpdateInput {
@@ -193,6 +377,19 @@ input EventRelateToOneForUpdateInput {
   disconnect: Boolean
 }
 
+input PaymentRelateToManyForUpdateInput {
+  disconnect: [PaymentWhereUniqueInput!]
+  set: [PaymentWhereUniqueInput!]
+  create: [PaymentCreateInput!]
+  connect: [PaymentWhereUniqueInput!]
+}
+
+input PaymentRelateToOneForUpdateInput {
+  create: PaymentCreateInput
+  connect: PaymentWhereUniqueInput
+  disconnect: Boolean
+}
+
 input UserUpdateArgs {
   where: UserWhereUniqueInput!
   data: UserUpdateInput!
@@ -204,6 +401,8 @@ input UserCreateInput {
   password: String
   posts: PostRelateToManyForCreateInput
   events: EventRelateToOneForCreateInput
+  payments: PaymentRelateToManyForCreateInput
+  accepted: PaymentRelateToOneForCreateInput
 }
 
 input PostRelateToManyForCreateInput {
@@ -214,6 +413,16 @@ input PostRelateToManyForCreateInput {
 input EventRelateToOneForCreateInput {
   create: EventCreateInput
   connect: EventWhereUniqueInput
+}
+
+input PaymentRelateToManyForCreateInput {
+  create: [PaymentCreateInput!]
+  connect: [PaymentWhereUniqueInput!]
+}
+
+input PaymentRelateToOneForCreateInput {
+  create: PaymentCreateInput
+  connect: PaymentWhereUniqueInput
 }
 
 type Post {
@@ -279,17 +488,6 @@ input NestedStringNullableFilter {
   startsWith: String
   endsWith: String
   not: NestedStringNullableFilter
-}
-
-input DateTimeNullableFilter {
-  equals: DateTime
-  in: [DateTime!]
-  notIn: [DateTime!]
-  lt: DateTime
-  lte: DateTime
-  gt: DateTime
-  gte: DateTime
-  not: DateTimeNullableFilter
 }
 
 input TagManyRelationFilter {
@@ -400,6 +598,15 @@ type Mutation {
   updateEvents(data: [EventUpdateArgs!]!): [Event]
   deleteEvent(where: EventWhereUniqueInput!): Event
   deleteEvents(where: [EventWhereUniqueInput!]!): [Event]
+  createPayment(data: PaymentCreateInput!): Payment
+  createPayments(data: [PaymentCreateInput!]!): [Payment]
+  updatePayment(
+    where: PaymentWhereUniqueInput!
+    data: PaymentUpdateInput!
+  ): Payment
+  updatePayments(data: [PaymentUpdateArgs!]!): [Payment]
+  deletePayment(where: PaymentWhereUniqueInput!): Payment
+  deletePayments(where: [PaymentWhereUniqueInput!]!): [Payment]
   createUser(data: UserCreateInput!): User
   createUsers(data: [UserCreateInput!]!): [User]
   updateUser(where: UserWhereUniqueInput!, data: UserUpdateInput!): User
@@ -456,6 +663,14 @@ type Query {
   ): [Event!]
   event(where: EventWhereUniqueInput!): Event
   eventsCount(where: EventWhereInput! = {}): Int
+  payments(
+    where: PaymentWhereInput! = {}
+    orderBy: [PaymentOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [Payment!]
+  payment(where: PaymentWhereUniqueInput!): Payment
+  paymentsCount(where: PaymentWhereInput! = {}): Int
   users(
     where: UserWhereInput! = {}
     orderBy: [UserOrderByInput!]! = []

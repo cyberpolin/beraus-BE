@@ -20,13 +20,35 @@ model Event {
   userId       String?  @unique @map("user") @postgresql.Uuid
 }
 
+model Payment {
+  id               String    @id @default(uuid()) @postgresql.Uuid
+  dueDate          DateTime
+  payDatetimestamp DateTime?
+  amount           String    @default("")
+  acceptedBy       User?     @relation("Payment_acceptedBy", fields: [acceptedById], references: [id])
+  acceptedById     String?   @unique @map("acceptedBy") @postgresql.Uuid
+  user             User?     @relation("Payment_user", fields: [userId], references: [id])
+  userId           String?   @map("user") @postgresql.Uuid
+  image_filesize   Int?
+  image_extension  String?
+  image_width      Int?
+  image_height     Int?
+  image_mode       String?
+  image_id         String?
+  cImage           Json?
+
+  @@index([userId])
+}
+
 model User {
-  id       String @id @default(uuid()) @postgresql.Uuid
-  name     String @default("")
-  email    String @unique @default("")
+  id       String    @id @default(uuid()) @postgresql.Uuid
+  name     String    @default("")
+  email    String    @unique @default("")
   password String
-  posts    Post[] @relation("Post_author")
-  events   Event? @relation("Event_user")
+  posts    Post[]    @relation("Post_author")
+  events   Event?    @relation("Event_user")
+  payments Payment[] @relation("Payment_user")
+  accepted Payment?  @relation("Payment_acceptedBy")
 }
 
 model Post {
