@@ -41,14 +41,15 @@ model Payment {
 }
 
 model User {
-  id       String    @id @default(uuid()) @postgresql.Uuid
-  name     String    @default("")
-  email    String    @unique @default("")
-  password String
-  posts    Post[]    @relation("Post_author")
-  events   Event?    @relation("Event_user")
-  payments Payment[] @relation("Payment_user")
-  accepted Payment?  @relation("Payment_acceptedBy")
+  id                 String    @id @default(uuid()) @postgresql.Uuid
+  name               String    @default("")
+  email              String    @unique @default("")
+  password           String
+  lastPasswordUpdate DateTime?
+  posts              Post[]    @relation("Post_author")
+  events             Event?    @relation("Event_user")
+  payments           Payment[] @relation("Payment_user")
+  accepted           Payment?  @relation("Payment_acceptedBy")
 }
 
 model Post {

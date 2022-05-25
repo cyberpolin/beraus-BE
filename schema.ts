@@ -102,6 +102,7 @@ export const lists: Lists = {
       }),
       // The password field takes care of hiding details and hashing values
       password: password({ validation: { isRequired: true } }),
+      lastPasswordUpdate: timestamp(),
       // Relationships allow us to reference other lists. In this case,
       // we want a user to have many posts, and we are saying that the user
       // should be referencable by the 'author' field of posts.

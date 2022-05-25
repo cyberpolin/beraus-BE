@@ -296,6 +296,7 @@ type User {
   name: String
   email: String
   password: PasswordState
+  lastPasswordUpdate: DateTime
   posts(
     where: PostWhereInput! = {}
     orderBy: [PostOrderByInput!]! = []
@@ -330,6 +331,7 @@ input UserWhereInput {
   id: IDFilter
   name: StringFilter
   email: StringFilter
+  lastPasswordUpdate: DateTimeNullableFilter
   posts: PostManyRelationFilter
   events: EventWhereInput
   payments: PaymentManyRelationFilter
@@ -352,12 +354,14 @@ input UserOrderByInput {
   id: OrderDirection
   name: OrderDirection
   email: OrderDirection
+  lastPasswordUpdate: OrderDirection
 }
 
 input UserUpdateInput {
   name: String
   email: String
   password: String
+  lastPasswordUpdate: DateTime
   posts: PostRelateToManyForUpdateInput
   events: EventRelateToOneForUpdateInput
   payments: PaymentRelateToManyForUpdateInput
@@ -399,6 +403,7 @@ input UserCreateInput {
   name: String
   email: String
   password: String
+  lastPasswordUpdate: DateTime
   posts: PostRelateToManyForCreateInput
   events: EventRelateToOneForCreateInput
   payments: PaymentRelateToManyForCreateInput
